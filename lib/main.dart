@@ -6,17 +6,29 @@ void main() {
   ));
 }
 
+
+
 class DigitalPetApp extends StatefulWidget {
   @override
   _DigitalPetAppState createState() => _DigitalPetAppState();
 }
 
+
 class _DigitalPetAppState extends State<DigitalPetApp> {
   String petName = "Your Pet";
+  final TextEditingController _controller = TextEditingController();
   int happinessLevel = 50;
   int hungerLevel = 50;
   Color petColor = Colors.green;
   String petMood = "Happy";
+
+  @override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _showMyDialog(); // Now it's safe to use context
+  });
+}
 
   // Function to increase happiness and update hunger when playing with the pet
   void _playWithPet() {
@@ -84,6 +96,13 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
     }
   }
 
+  void _setPetName(String value) {
+    setState(() {
+      petName = value;
+    });
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,4 +153,29 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
       ),
     );
   }
+  Future<void> _showMyDialog() async {
+  return showDialog<void>(
+    context: context,  // Context now correctly belongs to _DigitalPetAppState
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Pet Name'),
+        actions: <Widget>[
+          TextField(
+              controller: _controller,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Enter Pet Name',
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: _setPetName,
+            ),
+        ],
+      );
+    },
+  );
 }
+
+}
+
+
