@@ -19,8 +19,10 @@ class _DigitalPetAppState extends State<DigitalPetApp> {
   final TextEditingController _controller = TextEditingController();
   int happinessLevel = 50;
   int hungerLevel = 50;
-  Color petColor = Colors.green;
-  String petMood = "Happy";
+  int energyLevel = 50;
+  Color petColor = Colors.yellow;
+  Color energyColor = Colors.yellow;
+  String petMood = "Neutral";
 
   @override
 void initState() {
@@ -34,9 +36,11 @@ void initState() {
   void _playWithPet() {
     setState(() {
       happinessLevel = (happinessLevel + 10).clamp(0, 100);
+      energyLevel = (energyLevel - 10).clamp(0, 100);
       _updateHunger();
       _petColor();
       _petMood();
+      _energyColor();
     });
   }
 
@@ -44,7 +48,9 @@ void initState() {
   void _feedPet() {
     setState(() {
       hungerLevel = (hungerLevel - 10).clamp(0, 100);
+      energyLevel = (energyLevel + 10).clamp(0, 100);
       _updateHappiness();
+      _energyColor();
     });
   }
 
@@ -72,6 +78,20 @@ void initState() {
       }
       else {
         petMood = "Happy";
+      }
+    });
+  }
+
+  void _energyColor(){
+    setState(() {
+      if (energyLevel < 30 ) {
+        energyColor = Colors.red;
+      } 
+      else if (energyLevel < 70) {
+        energyColor = Colors.yellow;
+      }
+      else {
+        energyColor = Colors.green;
       }
     });
   }
@@ -119,6 +139,19 @@ void initState() {
               style: TextStyle(fontSize: 20.0),
             ),
             Container(
+          margin: EdgeInsets.symmetric(vertical: 20),
+          width: 300,
+          height: 20,
+          child: ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            child: LinearProgressIndicator(
+              value: energyLevel / 100,
+              valueColor: AlwaysStoppedAnimation<Color>(energyColor),
+              backgroundColor: Color(0xffD6D6D6),
+            ),
+          ),
+        ),
+            Container(
               width: 100,
               height: 100,
               decoration: BoxDecoration(
@@ -126,6 +159,8 @@ void initState() {
               color: petColor,),
               
             ),
+            
+            SizedBox(height: 16.0),
             Text('$petMood', style: TextStyle(fontSize: 20.0),),
             
             SizedBox(height: 16.0),
